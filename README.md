@@ -1,6 +1,8 @@
 # Rock-Paper-Scissors
 README - Juego de Rock, Paper, Scissors en Python
+
 📰 Descripción 📰
+
 Actividad: Crear un juego de "Rock, Paper, Scissors" en Python
 Integrante: Haffid Diaz Pertuz
 Fecha: 5/03/2025
@@ -12,6 +14,7 @@ La idea de esta actividad es crear un juego interactivo donde el jugador pueda e
 
 
 📚 Reglas del Juego 📚
+
 Las reglas son muy sencillas y muy conocidas:
 
 Rock (Piedra) vence a Scissors (Tijeras).
@@ -26,6 +29,7 @@ Así de fácil!, El propósito del juego es que el jugador se divierta un rato y
 
 
 ⚙️ ¿Qué va a hacer el programa? ⚙️
+
 Elegir tu movimiento:
 El jugador elige entre "Rock", "Paper" o "Scissors". Elige lo que creas que será la mejor jugada.
 
@@ -44,6 +48,7 @@ Después de la comparación, el programa mostrará el resultado: quién ganó o 
 
 
 ✂️ Cómo jugar ✂️
+
 Clonar o descargar el archivo
 Si aún no lo has hecho, descarga el archivo de este juego (probablemente llamado rock_paper_scissors.py).
 
