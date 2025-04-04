@@ -20,12 +20,7 @@ while running:
         print("GANASTE!")
     elif player == "Papel" and computer == "Piedra":
         print("GANAS!")
-    elif player == "Tijeras" and computer == "":
+    elif player == "scissors" and computer == "paper":
         print("VICTORIA!")
-    else:
-        print("MALA SUERTE PIERDES!")
-
-    if not input("Otra Ronda? (si/no): ").lower() == "si":
-        running = False
-
-    print("Gracias por jugar!")
+    #else:
+       # print("MALA SUERTE PIERDES!")
