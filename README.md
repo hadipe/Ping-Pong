@@ -25,9 +25,9 @@ La idea de esta actividad es crear un juego interactivo donde el jugador pueda e
 
 Las reglas son muy sencillas y muy conocidas:
 
-Rock (Piedra) vence a Scissors (Tijeras).
-Scissors (Tijeras) vence a Paper (Papel).
-Paper (Papel) vence a Rock (Piedra).
+(Piedra) vence a (Tijeras).
+(Tijeras) vence a (Papel).
+(Papel) vence a (Piedra).
 Si ambos eligen lo mismo, es un empate.
 Así de fácil!, El propósito del juego es que el jugador se divierta un rato y ponga a prueba su suerte frente a la computadora.
 
@@ -39,7 +39,7 @@ Así de fácil!, El propósito del juego es que el jugador se divierta un rato y
 ⚙️ ¿Qué va a hacer el programa? ⚙️
 
 Elegir tu movimiento:
-El jugador elige entre "Rock", "Paper" o "Scissors". Elige lo que creas que será la mejor jugada.
+El jugador elige entre "Piedra", "Papel" o "Tijeras". Elige lo que creas que será la mejor jugada.
 
 Elegir el movimiento de la computadora:
 La computadora hará su elección de forma aleatoria.
@@ -65,7 +65,7 @@ Abre una terminal o consola y navega a la carpeta donde descargaste el archivo. 
 
 python rock_paper_scissors.py
 Jugar
-El programa te pedirá que elijas entre las tres opciones: "Rock", "Paper" o "Scissors". Escribe tu opción y presiona "Enter". Después, la computadora elegirá una opción al azar y te dirá si ganaste, perdiste o si fue un empate.
+El programa te pedirá que elijas entre las tres opciones: "Piedra", "Papel" o "Tijeras". Escribe tu opción y presiona "Enter". Después, la computadora elegirá una opción al azar y te dirá si ganaste, perdiste o si fue un empate.
 
 Repetir o Salir
 Al final de cada ronda, el programa te preguntará si quieres jugar otra vez. Si deseas continuar, responde "sí", y si ya has tenido suficiente, responde "no".
@@ -80,13 +80,13 @@ Al final de cada ronda, el programa te preguntará si quieres jugar otra vez. Si
 Bienvenido al juego de Rock, Paper, Scissors!
 
 Elige una opción:
-1. Rock
-2. Paper
-3. Scissors
+1. Piedra
+2. Papel
+3. Tijeras
 
-Tu elección: Rock
+Tu elección: Piedra
 
-La computadora ha elegido: Scissors
+La computadora ha elegido: Tijeras
 
 ¡Tú ganaste!
 
