@@ -1,4 +1,4 @@
-# Rock-Paper-Scissors
+# Ping pong
 
 
 
@@ -7,48 +7,46 @@ Integrantes: Haffid Diaz (estoy solo)
 Usuario Github: hadipe
 Correo: e8ydiaz@colsanjose.edu.co
 
-README - Juego de Rock, Paper, Scissors en Python
+README - Juego Ping pong en Python
 
 📰 Descripción 📰
 
-Actividad: Crear un juego de "Rock, Paper, Scissors" en Python
+Actividad: Crear un juego en Python
 
 Fecha: 5/03/2025
 
-La idea de esta actividad es crear un juego interactivo donde el jugador pueda elegir entre "Rock" (Piedra), "Paper" (Papel) o "Scissors" (Tijeras), y la computadora haga su elección de manera aleatoria. Luego, el programa compara ambas elecciones para determinar quién gana, basándose en las reglas clásicas del juego.
-
+El objetivo de este proyecto es desarrollar un juego clásico de "Pong", donde dos jugadores controlan paletas y compiten para hacer rebotar una pelota. El juego realiza un seguimiento del puntaje de cada jugador y muestra el resultado en la pantalla.
 
 
 
 
 📚 Reglas del Juego 📚
 
-Las reglas son muy sencillas y muy conocidas:
+Las reglas son:
 
-(Piedra) vence a (Tijeras).
-(Tijeras) vence a (Papel).
-(Papel) vence a (Piedra).
-Si ambos eligen lo mismo, es un empate.
-Así de fácil!, El propósito del juego es que el jugador se divierta un rato y ponga a prueba su suerte frente a la computadora.
-
-
+Dos jugadores controlan paletas en lados opuestos de la pantalla.
+Los jugadores deben golpear la pelota para evitar que salga del área de juego.
+El juego otorga un punto al jugador que no logra devolver la pelota.
+El juego continúa hasta que los jugadores deciden detenerlo.
 
 
 
 
 ⚙️ ¿Qué va a hacer el programa? ⚙️
 
-Elegir tu movimiento:
-El jugador elige entre "Piedra", "Papel" o "Tijeras". Elige lo que creas que será la mejor jugada.
+Paletas y Pelota:
+Dos paletas (una para cada jugador) y una pelota son creadas y posicionadas en la ventana.
 
-Elegir el movimiento de la computadora:
-La computadora hará su elección de forma aleatoria.
+Control de Jugadores:
+Los jugadores pueden mover sus paletas hacia arriba y hacia abajo utilizando las teclas:
 
-Comparar las elecciones:
-Después de que ambos elijan, el programa comparará las opciones y determinará si tú ganaste, la computadora ganó, o si hubo empate.
+Jugador A: W (arriba) y S (abajo)
+Jugador B: Flecha Arriba (arriba) y Flecha Abajo (abajo)
+Puntuación:
+La puntuación de cada jugador se muestra en la parte superior de la ventana. Los puntos se incrementan cuando la pelota pasa la paleta del oponente.
 
-Mostrar el resultado:
-Después de la comparación, el programa mostrará el resultado: quién ganó o si fue un empate. Además, te dará la opción de jugar otra vez.
+Bucle del Juego:
+El juego sigue un bucle donde la pelota se mueve, se verifica si colisiona con las paletas o los bordes, y se actualiza la puntuación.
 
 
 
@@ -57,37 +55,20 @@ Después de la comparación, el programa mostrará el resultado: quién ganó o 
 
 ✂️ Cómo jugar ✂️
 
-Clonar o descargar el archivo
-Si aún no lo has hecho, descarga el archivo de este juego (probablemente llamado rock_paper_scissors.py).
+Jugar:
+Usa las teclas mencionadas para mover las paletas y evitar que la pelota pase.
 
-Ejecutar el juego
-Abre una terminal o consola y navega a la carpeta donde descargaste el archivo. Luego, solo tienes que ejecutar el archivo con:
-
-python rock_paper_scissors.py
-Jugar
-El programa te pedirá que elijas entre las tres opciones: "Piedra", "Papel" o "Tijeras". Escribe tu opción y presiona "Enter". Después, la computadora elegirá una opción al azar y te dirá si ganaste, perdiste o si fue un empate.
-
-Repetir o Salir
-Al final de cada ronda, el programa te preguntará si quieres jugar otra vez. Si deseas continuar, responde "sí", y si ya has tenido suficiente, responde "no".
-
-
+Finalizar el juego:
+Puedes cerrar la ventana para salir del juego en cualquier momento.
 
 
 
 
 🪨 Ejemplo de cómo se ve 🪨
 
-Bienvenido al juego de Rock, Paper, Scissors!
+Bienvenido al juego de Pong!  
 
-Elige una opción:
-1. Piedra
-2. Papel
-3. Tijeras
+Jugador A: Presiona W para mover arriba, S para mover abajo.  
+Jugador B: Usa las flechas hacia arriba y hacia abajo para mover.  
 
-Tu elección: Piedra
-
-La computadora ha elegido: Tijeras
-
-¡Tú ganaste!
-
-¿Quieres jugar otra vez? (sí/no): sí
+¡Que empiece el juego!  
