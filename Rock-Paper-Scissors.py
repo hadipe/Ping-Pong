@@ -1,17 +1,17 @@
 import turtle
 import os
 
-wn = turtle.Screen()
-wn.title("Pong")
-wn.bgcolor("Green")
-wn.setup(width=800, height=600)
-wn.tracer(0)
+h = turtle.Screen()
+h.title("Pong")
+h.bgcolor("Green")
+h.setup(width=800, height=600)
+h.tracer(0)
 
-# Puntuación
+# Los Puntos
 puntuacion_a = 0
 puntuacion_b = 0
 
-# Paleta A
+# Cosas de la paleta A
 paleta_a = turtle.Turtle()
 paleta_a.speed(0)
 paleta_a.shape("square")
@@ -20,7 +20,7 @@ paleta_a.shapesize(stretch_wid=5, stretch_len=1)
 paleta_a.penup()
 paleta_a.goto(-350, 0)
 
-# Paleta B
+# Cosas de la paleta B
 paleta_b = turtle.Turtle()
 paleta_b.speed(0)
 paleta_b.shape("square")
@@ -29,7 +29,7 @@ paleta_b.shapesize(stretch_wid=5, stretch_len=1)
 paleta_b.penup()
 paleta_b.goto(350, 0)
 
-# Pelota
+# Cosas de la pelota
 pelota = turtle.Turtle()
 pelota.speed(0)
 pelota.shape("square")
@@ -40,17 +40,17 @@ pelota.dx = 0.09  # Velocidad inicial más baja
 pelota.dy = 0.09  # Velocidad inicial más baja
 
 
-# Lápiz 
-lapiz = turtle.Turtle()
-lapiz.speed(0)
-lapiz.shape("square")
-lapiz.color("white")
-lapiz.penup()
-lapiz.hideturtle()
-lapiz.goto(0, 260)
-lapiz.write("Jugador A: 0  Jugador B: 0", align="center", font=("Courier", 24, "normal"))
+# Marcador
+marcador = turtle.Turtle()
+marcador.speed(0)
+marcador.shape("circle")
+marcador.color("white")
+marcador.penup()
+marcador.hideturtle()
+marcador.goto(0, 260)
+marcador.write("Jugador A: 0  Jugador B: 0", align="center", font=("Courier", 24, "normal"))
 
-# Funciones
+# no se
 def paleta_a_arriba():
     y = paleta_a.ycor()
     y += 20
@@ -71,13 +71,13 @@ def paleta_b_abajo():
     y -= 20
     paleta_b.sety(y)
 
-# Configuración del teclado
-wn.listen()
-wn.onkeypress(paleta_a_arriba, "w")
-wn.onkeypress(paleta_a_abajo, "s")
-wn.onkeypress(paleta_b_arriba, "Up")
-wn.onkeypress(paleta_b_abajo, "Down")
+# Movimiento con el teclado
+h.listen()
+h.onkeypress(paleta_a_arriba, "w")
+h.onkeypress(paleta_a_abajo, "s")
+h.onkeypress(paleta_b_arriba, "Up")
+h.onkeypress(paleta_b_abajo, "Down")
 
-# Bucle principal del juego
+# Bucle del juego
 while True:
-    wn.update()
+    h.update()
