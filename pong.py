@@ -2,45 +2,48 @@ import pygame
 import sys
 import random
 
-# Inicializar Pygame y audio
+# Inicialización
 pygame.init()
 pygame.mixer.init()
 
-# Lista de canciones (playlist)
+paused = False
+music_volume = 0.5
+sfx_volume = 0.5
+
+# Playlist
 playlist = [
     "musica_fondo1.mp3",
     "musica_fondo2.mp3",
     "musica_fondo3.mp3"
 ]
 current_song = 0
-
-# Evento para detectar fin de canción
 pygame.mixer.music.set_endevent(pygame.USEREVENT + 1)
 
 def play_next_song():
     global current_song
     pygame.mixer.music.load(playlist[current_song])
-    pygame.mixer.music.set_volume(0.5)
+    pygame.mixer.music.set_volume(music_volume)
     pygame.mixer.music.play()
     current_song = (current_song + 1) % len(playlist)
 
-play_next_song()  # Reproducir la primera canción
+play_next_song()
 
-# Cargar sonidos
+# Sonidos
 hit_sound = pygame.mixer.Sound("hit.wav.mp3")
 score_sound = pygame.mixer.Sound("score.wav.mp3")
 power_sound = pygame.mixer.Sound("power.wav.mp3")
 
-# Configurar pantalla
+# Pantalla
 width, height = 800, 600
 screen = pygame.display.set_mode((width, height))
-pygame.display.set_caption("Pong con Poderes")
+pygame.display.set_caption("Pong con Poderes y Menú")
 
-# Imagen de fondo
+# Imágenes
 background_image = pygame.image.load("fondo_pong.jpg").convert()
 background_image = pygame.transform.scale(background_image, (width, height))
+pause_menu_image = pygame.image.load("menu_pausa.png").convert_alpha()
+pause_menu_image = pygame.transform.scale(pause_menu_image, (400, 300))
 
-# Imágenes de poderes
 power_images = {
     "speed": pygame.image.load("power_speed.png"),
     "big_paddle": pygame.image.load("power_big_paddle.png"),
@@ -51,16 +54,16 @@ power_images = {
     "invisible": pygame.image.load("power_invisible.png"),
 }
 for key in power_images:
-    power_images[key] = pygame.transform.scale(power_images[key], (20, 20))
+    power_images[key] = pygame.transform.scale(power_images[key], (40, 40))
 
 # Colores
 white = (255, 255, 255)
 
-# Paletas y pelota
+# Objetos
 paddle_width, paddle_height = 10, 100
 paddle_speed = 10
-
 ball_size = 20
+
 ball_speed_x = 5 * random.choice((1, -1))
 ball_speed_y = 5 * random.choice((1, -1))
 
@@ -79,13 +82,16 @@ frozen_timer = 0
 invisible = False
 invisible_timer = 0
 
-# Puntuación
+# Estados
 score_a, score_b = 0, 0
 font = pygame.font.SysFont("Courier", 24)
+paused = False
+music_volume = 0.5
+sfx_volume = 0.5
 
 clock = pygame.time.Clock()
 
-# Bucle principal
+# Loop principal
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -93,8 +99,48 @@ while True:
             sys.exit()
         elif event.type == pygame.USEREVENT + 1:
             play_next_song()
-        elif event.type == pygame.KEYDOWN and event.key == pygame.K_n:
-            play_next_song()  # Cambio manual de canción
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE or event.key == pygame.K_p:
+                paused = not paused
+            elif event.key == pygame.K_n:
+                play_next_song()
+            elif paused:
+                # Volumen música
+                if event.key == pygame.K_LEFT:
+                    music_volume = max(0, music_volume - 0.1)
+                    pygame.mixer.music.set_volume(music_volume)
+                elif event.key == pygame.K_RIGHT:
+                    music_volume = min(1, music_volume + 0.1)
+                    pygame.mixer.music.set_volume(music_volume)
+                # Volumen efectos
+                elif event.key == pygame.K_DOWN:
+                    sfx_volume = max(0, sfx_volume - 0.1)
+                elif event.key == pygame.K_UP:
+                    sfx_volume = min(1, sfx_volume + 0.1)
+                hit_sound.set_volume(sfx_volume)
+                score_sound.set_volume(sfx_volume)
+                power_sound.set_volume(sfx_volume)
+
+    if paused:
+        # Dibujar menú pausa
+        screen.blit(background_image, (0, 0))
+        screen.blit(pause_menu_image, (width // 2 - 200, height // 2 - 150))
+
+        # Texto menú
+        pause_text = font.render("JUEGO EN PAUSA", True, white)
+        screen.blit(pause_text, (width // 2 - pause_text.get_width() // 2, 180))
+
+        vol_musica = font.render(f"Musica: {int(music_volume * 100)}%", True, white)
+        vol_sonido = font.render(f"Sonidos: {int(sfx_volume * 100)}%", True, white)
+        screen.blit(vol_musica, (width // 2 - vol_musica.get_width() // 2, 240))
+        screen.blit(vol_sonido, (width // 2 - vol_sonido.get_width() // 2, 270))
+
+        continuar = font.render("Pulsa ESC o P para continuar", True, white)
+        screen.blit(continuar, (width // 2 - continuar.get_width() // 2, 320))
+
+        pygame.display.flip()
+        clock.tick(15)
+        continue
 
     # Movimiento paletas
     keys = pygame.key.get_pressed()
@@ -138,7 +184,7 @@ while True:
             ball_speed_y = 5 * random.choice((1, -1))
             score_sound.play()
 
-    # Activar poderes
+    # Poderes
     if not power_active and random.randint(0, 500) == 1:
         power_active = True
         power.x, power.y = random.randint(100, width - 100), random.randint(50, height - 50)
@@ -166,6 +212,7 @@ while True:
         elif power_type == "invisible":
             invisible = True
             invisible_timer = pygame.time.get_ticks()
+
         power_active = False
         power_timer = pygame.time.get_ticks()
 
