@@ -1,6 +1,7 @@
 import pygame
 import sys
 import random
+import time
 
 # Inicialización
 pygame.init()
@@ -10,20 +11,36 @@ paused = False
 music_volume = 0.5
 sfx_volume = 0.5
 
-# Playlist
+# Playlist y duraciones manuales (en segundos)
 playlist = [
-    "musica_fondo1.mp3",
-    "musica_fondo2.mp3",
-    "musica_fondo3.mp3"
+    "cancion1.mp3",
+    "cancion3.mp3",
+    "cancion2.mp3"
 ]
+song_lengths = {
+    "cancion1.mp3": 120,
+    "cancion3.mp3": 140,
+    "cancion2.mp3": 160
+}
 current_song = 0
+song_start_time = time.time()
 pygame.mixer.music.set_endevent(pygame.USEREVENT + 1)
 
 def play_next_song():
-    global current_song
+    global current_song, song_start_time
     pygame.mixer.music.load(playlist[current_song])
     pygame.mixer.music.set_volume(music_volume)
     pygame.mixer.music.play()
+    song_start_time = time.time()
+    current_song = (current_song + 1) % len(playlist)
+
+def play_previous_song():
+    global current_song, song_start_time
+    current_song = (current_song - 2) % len(playlist)  # -2 porque +1 ocurre al final
+    pygame.mixer.music.load(playlist[current_song])
+    pygame.mixer.music.set_volume(music_volume)
+    pygame.mixer.music.play()
+    song_start_time = time.time()
     current_song = (current_song + 1) % len(playlist)
 
 play_next_song()
@@ -58,6 +75,7 @@ for key in power_images:
 
 # Colores
 white = (255, 255, 255)
+gray = (180, 180, 180)
 
 # Objetos
 paddle_width, paddle_height = 10, 100
@@ -85,10 +103,6 @@ invisible_timer = 0
 # Estados
 score_a, score_b = 0, 0
 font = pygame.font.SysFont("Courier", 24)
-paused = False
-music_volume = 0.5
-sfx_volume = 0.5
-
 clock = pygame.time.Clock()
 
 # Loop principal
@@ -104,15 +118,15 @@ while True:
                 paused = not paused
             elif event.key == pygame.K_n:
                 play_next_song()
+            elif event.key == pygame.K_b:
+                play_previous_song()
             elif paused:
-                # Volumen música
                 if event.key == pygame.K_LEFT:
                     music_volume = max(0, music_volume - 0.1)
                     pygame.mixer.music.set_volume(music_volume)
                 elif event.key == pygame.K_RIGHT:
                     music_volume = min(1, music_volume + 0.1)
                     pygame.mixer.music.set_volume(music_volume)
-                # Volumen efectos
                 elif event.key == pygame.K_DOWN:
                     sfx_volume = max(0, sfx_volume - 0.1)
                 elif event.key == pygame.K_UP:
@@ -122,22 +136,16 @@ while True:
                 power_sound.set_volume(sfx_volume)
 
     if paused:
-        # Dibujar menú pausa
         screen.blit(background_image, (0, 0))
         screen.blit(pause_menu_image, (width // 2 - 200, height // 2 - 150))
-
-        # Texto menú
         pause_text = font.render("JUEGO EN PAUSA", True, white)
         screen.blit(pause_text, (width // 2 - pause_text.get_width() // 2, 180))
-
         vol_musica = font.render(f"Musica: {int(music_volume * 100)}%", True, white)
         vol_sonido = font.render(f"Sonidos: {int(sfx_volume * 100)}%", True, white)
         screen.blit(vol_musica, (width // 2 - vol_musica.get_width() // 2, 240))
         screen.blit(vol_sonido, (width // 2 - vol_sonido.get_width() // 2, 270))
-
         continuar = font.render("Pulsa ESC o P para continuar", True, white)
         screen.blit(continuar, (width // 2 - continuar.get_width() // 2, 320))
-
         pygame.display.flip()
         clock.tick(15)
         continue
@@ -212,7 +220,6 @@ while True:
         elif power_type == "invisible":
             invisible = True
             invisible_timer = pygame.time.get_ticks()
-
         power_active = False
         power_timer = pygame.time.get_ticks()
 
@@ -235,7 +242,22 @@ while True:
         pygame.draw.ellipse(screen, white, second_ball)
     if power_active:
         screen.blit(power_images[power_type], (power.x, power.y))
+
+    # Puntuación
     score_display = font.render(f"Jugador A: {score_a}  Jugador B: {score_b}", True, white)
     screen.blit(score_display, (width // 2 - score_display.get_width() // 2, 20))
+
+    # Barra de progreso y nombre
+    current_filename = playlist[(current_song - 1) % len(playlist)]
+    song_duration = song_lengths[current_filename]
+    elapsed = time.time() - song_start_time
+    progress = min(1, elapsed / song_duration)
+    bar_width = int(progress * 300)
+
+    pygame.draw.rect(screen, gray, (width // 2 - 150, height - 40, 300, 10))
+    pygame.draw.rect(screen, white, (width // 2 - 150, height - 40, bar_width, 10))
+    song_name_text = font.render(current_filename, True, white)
+    screen.blit(song_name_text, (width // 2 - song_name_text.get_width() // 2, height - 60))
+
     pygame.display.flip()
     clock.tick(60)
