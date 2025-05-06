@@ -149,6 +149,32 @@ while True:
         pygame.display.flip()
         clock.tick(15)
         continue
+        # Paredes aleatorias
+    walls = []
+    last_wall_spawn = pygame.time.get_ticks()
+    wall_duration = 5000  # milisegundos
+    # Generar paredes aleatorias
+    now = pygame.time.get_ticks()
+    if now - last_wall_spawn > 7000 and len(walls) < 3 and random.random() < 0.02:
+        wall_width = random.randint(10, 20)
+        wall_height = random.randint(100, 200)
+        wall_x = width // 2 - wall_width // 2 + random.randint(-40, 40)
+        wall_y = random.randint(50, height - 250)
+        walls.append({"rect": pygame.Rect(wall_x, wall_y, wall_width, wall_height), "spawn_time": now})
+        last_wall_spawn = now
+
+    # Eliminar paredes después de un tiempo
+    walls = [w for w in walls if now - w["spawn_time"] < wall_duration]
+
+    # Colisiones con paredes
+    for w in walls:
+        if ball.colliderect(w["rect"]):
+            ball_speed_x *= -1
+            hit_sound.play()
+        if second_ball and second_ball.colliderect(w["rect"]):
+            ball_speed_x *= -1
+            hit_sound.play()
+
 
     # Movimiento paletas
     keys = pygame.key.get_pressed()
@@ -233,6 +259,9 @@ while True:
         frozen = False
 
     # Dibujar
+    # Dibujar paredes
+    for w in walls:
+        pygame.draw.rect(screen, (200, 200, 200), w["rect"])
     screen.blit(background_image, (0, 0))
     pygame.draw.rect(screen, white, paddle_a)
     pygame.draw.rect(screen, white, paddle_b)
