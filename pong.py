@@ -2,58 +2,39 @@ import pygame
 import sys
 import random
 import time
+import math
 
 # Inicialización
 pygame.init()
 pygame.mixer.init()
 
-paused = False
+# Pantalla
+width, height = 800, 600
+screen = pygame.display.set_mode((width, height))
+pygame.display.set_caption("Pong con Poderes y Pelota Circular")
+
+# Colores
+white = (255, 255, 255)
+gray = (180, 180, 180)
+
+# Fuente
+font = pygame.font.SysFont("Courier", 24)
+
+# Variables de volumen
 music_volume = 0.5
 sfx_volume = 0.5
 
-# Playlist y duraciones manuales (en segundos)
-playlist = [
-    "cancion1.mp3",
-    "cancion3.mp3",
-    "cancion2.mp3"
-]
-song_lengths = {
-    "cancion1.mp3": 120,
-    "cancion3.mp3": 140,
-    "cancion2.mp3": 160
-}
+# Musica
+playlist = ["cancion1.mp3", "cancion3.mp3", "cancion2.mp3"]
+song_lengths = {"cancion1.mp3": 120, "cancion3.mp3": 140, "cancion2.mp3": 160}
 current_song = 0
 song_start_time = time.time()
 pygame.mixer.music.set_endevent(pygame.USEREVENT + 1)
-
-def play_next_song():
-    global current_song, song_start_time
-    pygame.mixer.music.load(playlist[current_song])
-    pygame.mixer.music.set_volume(music_volume)
-    pygame.mixer.music.play()
-    song_start_time = time.time()
-    current_song = (current_song + 1) % len(playlist)
-
-def play_previous_song():
-    global current_song, song_start_time
-    current_song = (current_song - 2) % len(playlist)  # -2 porque +1 ocurre al final
-    pygame.mixer.music.load(playlist[current_song])
-    pygame.mixer.music.set_volume(music_volume)
-    pygame.mixer.music.play()
-    song_start_time = time.time()
-    current_song = (current_song + 1) % len(playlist)
-
-play_next_song()
 
 # Sonidos
 hit_sound = pygame.mixer.Sound("hit.wav.mp3")
 score_sound = pygame.mixer.Sound("score.wav.mp3")
 power_sound = pygame.mixer.Sound("power.wav.mp3")
-
-# Pantalla
-width, height = 800, 600
-screen = pygame.display.set_mode((width, height))
-pygame.display.set_caption("Pong con Poderes y Menú")
 
 # Imágenes
 background_image = pygame.image.load("fondo_pong.jpg").convert()
@@ -73,22 +54,40 @@ power_images = {
 for key in power_images:
     power_images[key] = pygame.transform.scale(power_images[key], (40, 40))
 
-# Colores
-white = (255, 255, 255)
-gray = (180, 180, 180)
+# Funciones musicales
+def play_next_song():
+    global current_song, song_start_time
+    pygame.mixer.music.load(playlist[current_song])
+    pygame.mixer.music.set_volume(music_volume)
+    pygame.mixer.music.play()
+    song_start_time = time.time()
+    current_song = (current_song + 1) % len(playlist)
 
-# Objetos
+def play_previous_song():
+    global current_song, song_start_time
+    current_song = (current_song - 2) % len(playlist)
+    pygame.mixer.music.load(playlist[current_song])
+    pygame.mixer.music.set_volume(music_volume)
+    pygame.mixer.music.play()
+    song_start_time = time.time()
+    current_song = (current_song + 1) % len(playlist)
+
+play_next_song()
+
+# Paletas
 paddle_width, paddle_height = 10, 100
 paddle_speed = 10
-ball_size = 20
-
-ball_speed_x = 5 * random.choice((1, -1))
-ball_speed_y = 5 * random.choice((1, -1))
-
 paddle_a = pygame.Rect(50, height//2 - paddle_height//2, paddle_width, paddle_height)
 paddle_b = pygame.Rect(width - 50 - paddle_width, height//2 - paddle_height//2, paddle_width, paddle_height)
-ball = pygame.Rect(width//2 - ball_size//2, height//2 - ball_size//2, ball_size, ball_size)
+
+# Pelota circular
+ball_radius = 10
+ball_pos = [width//2, height//2]
+ball_speed = [5 * random.choice((1, -1)), 5 * random.choice((1, -1))]
 second_ball = None
+
+# Puntuación
+score_a, score_b = 0, 0
 
 # Poderes
 power_active = False
@@ -100,12 +99,19 @@ frozen_timer = 0
 invisible = False
 invisible_timer = 0
 
-# Estados
-score_a, score_b = 0, 0
-font = pygame.font.SysFont("Courier", 24)
+# Pausa
+paused = False
 clock = pygame.time.Clock()
 
-# Loop principal
+# Colisión círculo-rectángulo
+def circle_rect_collision(circle_pos, circle_radius, rect):
+    cx, cy = circle_pos
+    closest_x = max(rect.left, min(cx, rect.right))
+    closest_y = max(rect.top, min(cy, rect.bottom))
+    distance = math.hypot(cx - closest_x, cy - closest_y)
+    return distance < circle_radius
+
+# Bucle principal
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -138,43 +144,13 @@ while True:
     if paused:
         screen.blit(background_image, (0, 0))
         screen.blit(pause_menu_image, (width // 2 - 200, height // 2 - 150))
-        pause_text = font.render("JUEGO EN PAUSA", True, white)
-        screen.blit(pause_text, (width // 2 - pause_text.get_width() // 2, 180))
-        vol_musica = font.render(f"Musica: {int(music_volume * 100)}%", True, white)
-        vol_sonido = font.render(f"Sonidos: {int(sfx_volume * 100)}%", True, white)
-        screen.blit(vol_musica, (width // 2 - vol_musica.get_width() // 2, 240))
-        screen.blit(vol_sonido, (width // 2 - vol_sonido.get_width() // 2, 270))
-        continuar = font.render("Pulsa ESC o P para continuar", True, white)
-        screen.blit(continuar, (width // 2 - continuar.get_width() // 2, 320))
+        screen.blit(font.render("JUEGO EN PAUSA", True, white), (width//2 - 100, 180))
+        screen.blit(font.render(f"Musica: {int(music_volume * 100)}%", True, white), (width//2 - 100, 240))
+        screen.blit(font.render(f"Sonidos: {int(sfx_volume * 100)}%", True, white), (width//2 - 100, 270))
+        screen.blit(font.render("Pulsa ESC o P para continuar", True, white), (width//2 - 140, 320))
         pygame.display.flip()
         clock.tick(15)
         continue
-        # Paredes aleatorias
-    walls = []
-    last_wall_spawn = pygame.time.get_ticks()
-    wall_duration = 5000  # milisegundos
-    # Generar paredes aleatorias
-    now = pygame.time.get_ticks()
-    if now - last_wall_spawn > 7000 and len(walls) < 3 and random.random() < 0.02:
-        wall_width = random.randint(10, 20)
-        wall_height = random.randint(100, 200)
-        wall_x = width // 2 - wall_width // 2 + random.randint(-40, 40)
-        wall_y = random.randint(50, height - 250)
-        walls.append({"rect": pygame.Rect(wall_x, wall_y, wall_width, wall_height), "spawn_time": now})
-        last_wall_spawn = now
-
-    # Eliminar paredes después de un tiempo
-    walls = [w for w in walls if now - w["spawn_time"] < wall_duration]
-
-    # Colisiones con paredes
-    for w in walls:
-        if ball.colliderect(w["rect"]):
-            ball_speed_x *= -1
-            hit_sound.play()
-        if second_ball and second_ball.colliderect(w["rect"]):
-            ball_speed_x *= -1
-            hit_sound.play()
-
 
     # Movimiento paletas
     keys = pygame.key.get_pressed()
@@ -188,61 +164,73 @@ while True:
     if keys[pygame.K_DOWN] and paddle_b.bottom < height:
         paddle_b.y += paddle_speed
 
-    # Movimiento pelota(s)
-    ball.x += int(ball_speed_x)
-    ball.y += int(ball_speed_y)
-    if second_ball:
-        second_ball.x += int(ball_speed_x)
-        second_ball.y += int(ball_speed_y)
+    # Movimiento pelota
+    ball_pos[0] += ball_speed[0]
+    ball_pos[1] += ball_speed[1]
 
-    # Colisiones
-    for b in [ball] + ([second_ball] if second_ball else []):
-        if b.top <= 0 or b.bottom >= height:
-            ball_speed_y *= -1
-        if b.colliderect(paddle_a) or b.colliderect(paddle_b):
-            ball_speed_x *= -1
+    # Segundo balón
+    if second_ball:
+        second_ball[0] += ball_speed[0]
+        second_ball[1] += ball_speed[1]
+
+    # Rebote arriba/abajo
+    if ball_pos[1] - ball_radius <= 0 or ball_pos[1] + ball_radius >= height:
+        ball_speed[1] *= -1
+
+    if second_ball:
+        if second_ball[1] - ball_radius <= 0 or second_ball[1] + ball_radius >= height:
+            ball_speed[1] *= -1
+
+    # Colisiones con paletas
+    if circle_rect_collision(ball_pos, ball_radius, paddle_a) and ball_speed[0] < 0:
+        ball_speed[0] *= -1
+        hit_sound.play()
+    if circle_rect_collision(ball_pos, ball_radius, paddle_b) and ball_speed[0] > 0:
+        ball_speed[0] *= -1
+        hit_sound.play()
+
+    if second_ball:
+        if circle_rect_collision(second_ball, ball_radius, paddle_a) and ball_speed[0] < 0:
+            ball_speed[0] *= -1
+            hit_sound.play()
+        if circle_rect_collision(second_ball, ball_radius, paddle_b) and ball_speed[0] > 0:
+            ball_speed[0] *= -1
             hit_sound.play()
 
     # Goles
-    for b in [ball] + ([second_ball] if second_ball else []):
-        if b.left <= 0:
-            score_b += 1
-            b.x, b.y = width//2 - ball_size//2, height//2 - ball_size//2
-            ball_speed_x = 5 * random.choice((1, -1))
-            ball_speed_y = 5 * random.choice((1, -1))
-            score_sound.play()
-        if b.right >= width:
-            score_a += 1
-            b.x, b.y = width//2 - ball_size//2, height//2 - ball_size//2
-            ball_speed_x = 5 * random.choice((1, -1))
-            ball_speed_y = 5 * random.choice((1, -1))
-            score_sound.play()
+    if ball_pos[0] - ball_radius <= 0:
+        score_b += 1
+        ball_pos = [width//2, height//2]
+        ball_speed = [5 * random.choice((1, -1)), 5 * random.choice((1, -1))]
+        score_sound.play()
+    if ball_pos[0] + ball_radius >= width:
+        score_a += 1
+        ball_pos = [width//2, height//2]
+        ball_speed = [5 * random.choice((1, -1)), 5 * random.choice((1, -1))]
+        score_sound.play()
 
     # Poderes
     if not power_active and random.randint(0, 500) == 1:
         power_active = True
         power.x, power.y = random.randint(100, width - 100), random.randint(50, height - 50)
-        power_type = random.choice([
-            "speed", "big_paddle", "big_ball", "reverse",
-            "freeze", "multi_ball", "invisible"
-        ])
+        power_type = random.choice(["speed", "big_paddle", "big_ball", "reverse", "freeze", "multi_ball", "invisible"])
 
-    if power_active and ball.colliderect(power):
+    if power_active and math.hypot(ball_pos[0] - power.centerx, ball_pos[1] - power.centery) < ball_radius + 20:
         power_sound.play()
         if power_type == "speed":
-            ball_speed_x *= 1.5
-            ball_speed_y *= 1.5
+            ball_speed[0] *= 1.5
+            ball_speed[1] *= 1.5
         elif power_type == "big_paddle":
             paddle_a.height = 200
         elif power_type == "big_ball":
-            ball.width = ball.height = 40
+            ball_radius = 20
         elif power_type == "reverse":
-            ball_speed_x *= -1
+            ball_speed[0] *= -1
         elif power_type == "freeze":
             frozen = True
             frozen_timer = pygame.time.get_ticks()
         elif power_type == "multi_ball":
-            second_ball = pygame.Rect(ball.x, ball.y, 20, 20)
+            second_ball = list(ball_pos)
         elif power_type == "invisible":
             invisible = True
             invisible_timer = pygame.time.get_ticks()
@@ -252,23 +240,20 @@ while True:
     # Restaurar efectos
     if pygame.time.get_ticks() - power_timer > 5000:
         paddle_a.height = 100
-        ball.width = ball.height = 20
+        ball_radius = 10
         second_ball = None
         invisible = False
     if frozen and pygame.time.get_ticks() - frozen_timer > 3000:
         frozen = False
 
-    # Dibujar
-    # Dibujar paredes
-    for w in walls:
-        pygame.draw.rect(screen, (200, 200, 200), w["rect"])
+    # Dibujos
     screen.blit(background_image, (0, 0))
     pygame.draw.rect(screen, white, paddle_a)
     pygame.draw.rect(screen, white, paddle_b)
     if not invisible:
-        pygame.draw.ellipse(screen, white, ball)
+        pygame.draw.circle(screen, white, (int(ball_pos[0]), int(ball_pos[1])), ball_radius)
     if second_ball:
-        pygame.draw.ellipse(screen, white, second_ball)
+        pygame.draw.circle(screen, white, (int(second_ball[0]), int(second_ball[1])), ball_radius)
     if power_active:
         screen.blit(power_images[power_type], (power.x, power.y))
 
@@ -276,13 +261,12 @@ while True:
     score_display = font.render(f"Jugador A: {score_a}  Jugador B: {score_b}", True, white)
     screen.blit(score_display, (width // 2 - score_display.get_width() // 2, 20))
 
-    # Barra de progreso y nombre
+    # Barra de progreso de la canción
     current_filename = playlist[(current_song - 1) % len(playlist)]
     song_duration = song_lengths[current_filename]
     elapsed = time.time() - song_start_time
     progress = min(1, elapsed / song_duration)
     bar_width = int(progress * 300)
-
     pygame.draw.rect(screen, gray, (width // 2 - 150, height - 40, 300, 10))
     pygame.draw.rect(screen, white, (width // 2 - 150, height - 40, bar_width, 10))
     song_name_text = font.render(current_filename, True, white)
